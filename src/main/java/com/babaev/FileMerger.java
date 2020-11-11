@@ -1,55 +1,70 @@
 package com.babaev;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.*;
 import java.util.*;
 
+/*
+* @author Islam Babaev
+* */
 public class FileMerger {
-	private List<File> files;
-	private File folder;
+	private final File folder;
+	private String resultFile = "result.txt";
+	private int buffSize = 100000;
+	private List<File> files = new ArrayList<>();
 
-	public FileMerger(File folder){
-		this.folder = folder;
+	public FileMerger(String folder, String resultFilePath, int buffSize){
+		this.folder = new File(folder);
+		this.buffSize = buffSize;
+		this.resultFile = resultFilePath;
 	}
 
-	public String mergeFiles(){
-		files = new ArrayList<>();
-		addFilesToList(folder);
-		sortFilesByName();
+	public FileMerger(String folder, int buffSize){
+		this.folder = new File(folder);
+		this.buffSize = buffSize;
+	}
 
-		return mergeFileContents();
+	public FileMerger(String folder){
+		this.folder = new File(folder);
+	}
+
+	public void mergeFiles(){
+		addFilesToList(folder);
+		files.sort(Comparator.comparing(File::getName));
+		process();
 	}
 
 	private void addFilesToList(final File folder) {
 		for (final File fileEntry : folder.listFiles()) {
+			if (fileEntry.getName().equals(resultFile))
+				continue;
 			if (fileEntry.isDirectory()) {
 				addFilesToList(fileEntry);
-			} else if((fileEntry.getName().endsWith(".txt")))
-					files.add(fileEntry);
+			}
+			else if ((fileEntry.getName().endsWith(".txt"))) {
+				files.add(fileEntry);
 			}
 		}
-
-	private void sortFilesByName(){
-		files.sort(Comparator.comparing(File::getName));
 	}
 
-	private String getFileContent(File file){
-		String data = "";
+	private void process(){
 		try {
-			data = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
+			FileOutputStream output = new FileOutputStream(resultFile);
+
+			for(File file: files){
+				try(FileInputStream input = new FileInputStream(file))
+				{
+					byte[] buffer = new byte[buffSize];
+					while (input.available() > 0)
+					{
+						int bytes = input.read(buffer);
+						output.write(buffer, 0, bytes);
+					}
+				}
+			}
+
+			output.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return data;
-	}
-
-	private String mergeFileContents(){
-		StringBuilder result = new StringBuilder();
-		for(File f: files){
-			result.append(getFileContent(f));
-		}
-		return result.toString();
 	}
 }
