@@ -9,25 +9,22 @@ import java.util.*;
 public class FileMerger {
 	private String resultFile = "result.txt";
 	private int buffSize = 100000;
-	private final File folder;
 	private final List<File> files = new ArrayList<>();
 
-	public FileMerger(String folder, String resultFile, int buffSize){
-		this.folder = new File(folder);
-		this.buffSize = buffSize;
+	public FileMerger(String resultFile, int buffSize){
 		this.resultFile = resultFile;
-	}
-
-	public FileMerger(String folder, int buffSize){
-		this.folder = new File(folder);
 		this.buffSize = buffSize;
 	}
 
-	public FileMerger(String folder){
-		this.folder = new File(folder);
+	public FileMerger(int buffSize){
+		this.buffSize = buffSize;
 	}
 
-	public void mergeFiles(){
+	public FileMerger() {
+	}
+
+	public void mergeFiles(String path){
+		File folder = new File(path);
 		if (!folder.exists()){
 			throw new IllegalArgumentException("Invalid path");
 		}
