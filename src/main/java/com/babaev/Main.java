@@ -1,8 +1,5 @@
 package com.babaev;
 
-/*
- * @author Islam Babaev
- * */
 public class Main {
 	private static final String PATH = "/home";
 

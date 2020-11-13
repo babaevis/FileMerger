@@ -3,9 +3,6 @@ package com.babaev;
 import java.io.*;
 import java.util.*;
 
-/*
-* @author Islam Babaev
-* */
 public class FileMerger {
 	private String resultFile = "result.txt";
 	private int buffSize = 100000;
